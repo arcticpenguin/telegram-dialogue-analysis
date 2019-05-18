@@ -1,0 +1,59 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Load and Prep
+```{r}
+library(ggplot2)
+library(dplyr)
+
+dir_of_data <- "../vis/src/data/"
+file_of_data <- "fullData_cutted.csv"
+data_original <- read.csv(paste(dir_of_data, file_of_data, sep = ""))
+
+# Process
+data_log <- data_original %>%
+  rename(datetime=date) %>%
+  mutate(date=as.Date(datetime)) %>%
+  filter(date >= as.Date("2017-01-01"))
+
+```
+
+# Overall Time Series
+```{r}
+data <- data_log %>%
+  group_by(date) %>%
+  summarise(n=n()) %>%
+  ungroup()
+
+data %>%
+  ggplot(aes(x = date, y = n)) +
+  geom_bar(stat="identity") +
+  theme_bw()
+```
+# Separated Time Series
+```{r}
+data <- data_log %>%
+  group_by(date, from) %>%
+  summarise(n=n()) %>%
+  ungroup()
+
+data %>%
+  ggplot(aes(x = date, y = n, fill = from)) +
+  geom_bar(stat="identity", position = "identity", alpha = 0.5) +
+  theme_bw()
+```
+
+# Calendar Heatmap
+```{r}
+source("libs/calendarHeat.R")
+
+data <- data_log %>%
+  group_by(date) %>%
+  summarise(n=n()) %>%
+  ungroup()
+
+calendarHeat(data$date, data$n, ncolors = 99, color = "g2r", varname="Count")
+```
+
