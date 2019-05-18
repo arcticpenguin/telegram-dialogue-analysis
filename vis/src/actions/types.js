@@ -1,0 +1,1 @@
+export const LOAD_DIALOGUE_DATA = 'LOAD_DIALOGUE_DATA';

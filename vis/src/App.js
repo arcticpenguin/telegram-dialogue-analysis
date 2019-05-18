@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import { connect } from "react-redux";
+import { uniqId } from 'lodash';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import * as actions from "./actions";
+
+class App extends Component {
+
+  constructor(props) {
+    super(props);
+    this.props.loadDialogueData();
+  }
+
+  render() {
+    const { dialogueData } = this.props;
+    console.log(dialogueData);
+    if(dialogueData.length === undefined) {
+      return (
+        <div/>
+      );
+    }
+
+    return (
+      <div>
+        {dialogueData.map(dial => {
+          return <div>{dial.text}</div>
+        })}
+      </div >
+    );
+  }
 }
 
-export default App;
+const mapStateToProps = ({ dialogueData }) => {
+  return {
+    dialogueData,
+  };
+};
+
+export default connect(mapStateToProps, actions)(App);
