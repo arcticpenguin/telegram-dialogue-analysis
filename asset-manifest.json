@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/telegram-dialogue-analysis/vis/static/css/main.2cce8147.chunk.css",
+    "main.js": "/telegram-dialogue-analysis/vis/static/js/main.e2e81b60.chunk.js",
+    "main.js.map": "/telegram-dialogue-analysis/vis/static/js/main.e2e81b60.chunk.js.map",
+    "runtime~main.js": "/telegram-dialogue-analysis/vis/static/js/runtime~main.0e9f8e30.js",
+    "runtime~main.js.map": "/telegram-dialogue-analysis/vis/static/js/runtime~main.0e9f8e30.js.map",
+    "static/js/2.b41502e9.chunk.js": "/telegram-dialogue-analysis/vis/static/js/2.b41502e9.chunk.js",
+    "static/js/2.b41502e9.chunk.js.map": "/telegram-dialogue-analysis/vis/static/js/2.b41502e9.chunk.js.map",
+    "index.html": "/telegram-dialogue-analysis/vis/index.html",
+    "precache-manifest.8437453958ea87ffc5004d648b24b348.js": "/telegram-dialogue-analysis/vis/precache-manifest.8437453958ea87ffc5004d648b24b348.js",
+    "service-worker.js": "/telegram-dialogue-analysis/vis/service-worker.js",
+    "static/css/main.2cce8147.chunk.css.map": "/telegram-dialogue-analysis/vis/static/css/main.2cce8147.chunk.css.map",
+    "static/media/logo.svg": "/telegram-dialogue-analysis/vis/static/media/logo.5d5d9eef.svg"
+  }
+}
