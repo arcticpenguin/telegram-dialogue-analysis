@@ -15,12 +15,16 @@ data_original <- read.csv(paste(dir_of_data, file_of_data, sep = ""))
 # Process
 data_log <- data_original %>%
   rename(datetime=date) %>%
-  mutate(date=as.Date(datetime)) %>%
+  mutate(date=as.Date(datetime), 
+         text_cut=as.character(text_cut),
+         # words=fromJSON(text_cut),
+         ) %>%
   filter(date >= as.Date("2017-01-01"))
-
+levels(data_log$media_type)
 ```
 
-# Overall Time Series
+# Timeline
+## Overall Time Series
 ```{r}
 data <- data_log %>%
   group_by(date) %>%
@@ -32,7 +36,7 @@ data %>%
   geom_bar(stat="identity") +
   theme_bw()
 ```
-# Separated Time Series
+## Separated Time Series
 ```{r}
 data <- data_log %>%
   group_by(date, from) %>%
@@ -44,6 +48,20 @@ data %>%
   geom_bar(stat="identity", position = "identity", alpha = 0.5) +
   theme_bw()
 ```
+## media_type
+```{r}
+data <- data_log %>%
+  group_by(date, from, media_type) %>%
+  summarise(n=n()) %>%
+  ungroup()
+
+data %>%
+  ggplot(aes(x = date, y = n, fill = media_type)) +
+  geom_bar(stat="identity") +
+  facet_grid(from ~ .) +
+  theme_bw()
+```
+
 
 # Calendar Heatmap
 ```{r}
@@ -54,6 +72,13 @@ data <- data_log %>%
   summarise(n=n()) %>%
   ungroup()
 
-calendarHeat(data$date, data$n, ncolors = 99, color = "g2r", varname="Count")
+calendarHeat(data$date, data$n, ncolors = 99, color = "g2r", varname="Bubble Count")
 ```
+# Words
+## Test
+```{r}
+library(jsonlite)
+fromJSON('["是", "的"]')
+```
+
 

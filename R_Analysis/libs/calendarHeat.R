@@ -31,7 +31,7 @@ calendarHeat <- function(dates,
                          date.form = "%Y-%m-%d", ...) {
 require(lattice)
 require(grid)
-require(chron)
+# require(chron)
 if (class(dates) == "character" | class(dates) == "factor" ) {
   dates <- strptime(dates, date.form)
         }
