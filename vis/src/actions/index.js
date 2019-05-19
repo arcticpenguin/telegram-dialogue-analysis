@@ -7,7 +7,11 @@ export const loadDialogueData = () => dispatch => {
       .then(data => {
           dispatch({
             type: LOAD_DIALOGUE_DATA,
-            payload: data,
+            payload: data.map(d => ({
+              ...d,
+              datetimeStr: d.date,
+              dateStr: d.date.split('T')[0],
+            })),
           })
       })
 }
