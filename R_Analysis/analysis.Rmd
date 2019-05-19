@@ -7,20 +7,27 @@ output: html_notebook
 ```{r}
 library(ggplot2)
 library(dplyr)
+library(tidytext)
 
 dir_of_data <- "../vis/src/data/"
 file_of_data <- "fullData_cutted.csv"
 data_original <- read.csv(paste(dir_of_data, file_of_data, sep = ""))
+file_of_data_words <- "full_word_level.csv"
+data_words_original <- read.csv(paste(dir_of_data, file_of_data_words, sep = ""))
 
 # Process
 data_log <- data_original %>%
   rename(datetime=date) %>%
-  mutate(date=as.Date(datetime), 
-         text_cut=as.character(text_cut),
-         # words=fromJSON(text_cut),
-         ) %>%
-  filter(date >= as.Date("2017-01-01"))
-levels(data_log$media_type)
+  mutate(date=as.Date(datetime)) %>%
+  filter(date >= as.Date("2017-01-01"), 
+         action != "phone_call") %>%
+  left_join(data_words_original %>% count(id), by=c("id")) %>%
+  rename(word_count=n) %>%
+  mutate_at(c("word_count"), ~replace(., is.na(.), 0))
+
+data_words <- data_words_original %>%
+  inner_join(data_log, by=c("id", "from"))
+
 ```
 
 # Timeline
@@ -48,6 +55,20 @@ data %>%
   geom_bar(stat="identity", position = "identity", alpha = 0.5) +
   theme_bw()
 ```
+## Word count
+```{r}
+data <- data_log %>%
+  group_by(date, from) %>%
+  summarise(words=sum(word_count)) %>%
+  ungroup()
+
+data %>%
+  ggplot(aes(x = date, y = words, fill = from)) +
+  geom_bar(stat="identity", position = "identity", alpha = 0.5) +
+  theme_bw()
+```
+
+
 ## media_type
 ```{r}
 data <- data_log %>%
@@ -75,10 +96,61 @@ data <- data_log %>%
 calendarHeat(data$date, data$n, ncolors = 99, color = "g2r", varname="Bubble Count")
 ```
 # Words
-## Test
+## Word Frequency - with stopwords
 ```{r}
-library(jsonlite)
-fromJSON('["是", "的"]')
+temp_data <- data_words %>% 
+  group_by(word) %>% 
+  summarise(total_n=n()) %>%
+  ungroup()
+
+data_words %>%
+  group_by(word, from) %>%
+  summarise(n=n()) %>%
+  ungroup() %>%
+  left_join(temp_data, by=c("word")) %>%
+  filter(total_n > 1200) %>%
+  mutate(word = reorder(word, total_n)) %>%
+  ggplot(aes(x = word, y = n, fill = from)) +
+  theme(text = element_text(family = "Heiti SC Light")) +
+  geom_col() +
+  coord_flip() +
+  theme_bw(base_family="Heiti SC Light") +
+  labs(y = "Word Frequency")
+
 ```
+## Word Frequency - without stopwords
+```{r}
+source('libs/stopwords_chinese.R')
+
+temp_data <- data_words %>% 
+  group_by(word) %>% 
+  summarise(total_n=n()) %>%
+  ungroup()
+
+data_words %>%
+  group_by(word, from) %>%
+  summarise(n=n()) %>%
+  ungroup() %>%
+  left_join(temp_data, by=c("word")) %>%
+  anti_join(stopwords_chinese) %>%
+  anti_join(get_stopwords()) %>%
+  filter(total_n > 500) %>%
+  mutate(word = reorder(word, total_n)) %>%
+  ggplot(aes(x = word, y = n, fill = from)) +
+  theme(text = element_text(family = "Heiti SC Light")) +
+  geom_col() +
+  coord_flip() +
+  theme_bw(base_family="Heiti SC Light") +
+  labs(y = "Word Frequency")
+```
+## Word Cloud
+```{r}
+library(wordcloud)
+data_words %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 100))
+
+```
+
 
 
