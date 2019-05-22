@@ -18,7 +18,8 @@ data_words_original <- read.csv(paste(dir_of_data, file_of_data_words, sep = "")
 # Process
 data_log <- data_original %>%
   rename(datetime=date) %>%
-  mutate(date=as.Date(datetime)) %>%
+  mutate(date=as.Date(datetime),
+         time=times(format(as.POSIXct(datetime, "UTC", "%Y-%m-%dT%H:%M:%S"), "%H:%M:%S"))) %>%
   filter(date >= as.Date("2017-01-01"), 
          action != "phone_call") %>%
   left_join(data_words_original %>% count(id), by=c("id")) %>%
@@ -27,6 +28,7 @@ data_log <- data_original %>%
 
 data_words <- data_words_original %>%
   inner_join(data_log, by=c("id", "from"))
+
 
 ```
 
@@ -95,6 +97,18 @@ data <- data_log %>%
 
 calendarHeat(data$date, data$n, ncolors = 99, color = "g2r", varname="Bubble Count")
 ```
+# 24-hr Vis
+```{r}
+library(lubridate)
+library(scales)
+
+data_log %>%
+  ggplot(aes(x=time)) +
+  geom_histogram(binwidth =0.001) +
+  scale_x_time(breaks = "minute", labels=time_format("%H")) #？？？
+```
+
+
 # Words
 ## Word Frequency - with stopwords
 ```{r}
